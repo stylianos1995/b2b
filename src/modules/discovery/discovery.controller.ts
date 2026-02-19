@@ -6,6 +6,7 @@ import { RolesGuard } from "../../auth/guards/roles.guard";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 import { RequestContext } from "../../common/interfaces/request-context.interface";
+import { PaginationDto } from "../../common/dto/pagination.dto";
 import { ListDiscoveryProvidersQueryDto } from "./dto/list-providers-query.dto";
 
 @Controller("discovery")
