@@ -1,0 +1,16 @@
+export const EVENT_NAMES = {
+  USER_REGISTERED: 'user.registered',
+  BUSINESS_CREATED: 'business.created',
+  PROVIDER_VERIFIED: 'provider.verified',
+  PRODUCT_CREATED: 'product.created',
+  ORDER_PLACED: 'order.placed',
+  ORDER_CONFIRMED: 'order.confirmed',
+  ORDER_PREPARED: 'order.prepared',
+  ORDER_DISPATCHED: 'order.dispatched',
+  ORDER_DELIVERED: 'order.delivered',
+  INVOICE_GENERATED: 'invoice.generated',
+  PAYMENT_INITIATED: 'payment.initiated',
+  PAYMENT_COMPLETED: 'payment.completed',
+  PAYOUT_EXECUTED: 'payout.executed',
+  RATING_SUBMITTED: 'rating.submitted',
+} as const;

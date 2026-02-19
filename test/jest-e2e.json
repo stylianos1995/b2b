@@ -1,0 +1,12 @@
+{
+  "displayName": "e2e",
+  "testEnvironment": "node",
+  "rootDir": "..",
+  "testMatch": ["<rootDir>/test/e2e/**/*.e2e-spec.ts"],
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "transform": { "^.+\\.(t|j)s$": "ts-jest" },
+  "moduleNameMapper": { "^src/(.*)$": "<rootDir>/src/$1" },
+  "setupFiles": ["<rootDir>/test/e2e/setup-env.js"],
+  "setupFilesAfterEnv": [],
+  "testTimeout": 120000
+}
