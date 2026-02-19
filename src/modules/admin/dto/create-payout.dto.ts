@@ -1,5 +1,12 @@
-import { IsUUID, IsOptional, IsNumber, IsString, Min, MaxLength } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsUUID,
+  IsOptional,
+  IsNumber,
+  IsString,
+  Min,
+  MaxLength,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreatePayoutDto {
   @IsUUID()

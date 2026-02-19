@@ -1,5 +1,14 @@
-import { IsString, IsNumber, IsOptional, IsArray, IsUrl, MaxLength, Min, ArrayMaxSize } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsUrl,
+  MaxLength,
+  Min,
+  ArrayMaxSize,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateProductDto {
   @IsString()

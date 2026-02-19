@@ -5,8 +5,8 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { Request, Response } from "express";
 
 export interface ErrorResponse {
   code: string;
@@ -31,18 +31,24 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const code =
       exception instanceof HttpException
         ? this.codeFromException(exception)
-        : 'INTERNAL_ERROR';
+        : "INTERNAL_ERROR";
 
     const message =
       exception instanceof HttpException
         ? exception.message
-        : 'An unexpected error occurred';
+        : "An unexpected error occurred";
 
     let details: unknown =
       exception instanceof HttpException
-        ? (exception.getResponse() as Record<string, unknown>)?.message ?? undefined
+        ? ((exception.getResponse() as Record<string, unknown>)?.message ??
+          undefined)
         : undefined;
-    if (details === undefined && status >= 500 && exception instanceof Error && process.env.NODE_ENV !== 'production') {
+    if (
+      details === undefined &&
+      status >= 500 &&
+      exception instanceof Error &&
+      process.env.NODE_ENV !== "production"
+    ) {
       details = exception.message;
     }
 
@@ -55,7 +61,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const body: ErrorResponse = {
       code,
-      message: typeof message === 'string' ? message : 'Error',
+      message: typeof message === "string" ? message : "Error",
       ...(details !== undefined && { details }),
     };
 
@@ -66,20 +72,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const res = exception.getResponse();
     const code = (res as Record<string, string>)?.error;
-    if (typeof code === 'string') return code;
+    if (typeof code === "string") return code;
     switch (status) {
       case HttpStatus.BAD_REQUEST:
-        return 'BAD_REQUEST';
+        return "BAD_REQUEST";
       case HttpStatus.UNAUTHORIZED:
-        return 'UNAUTHORIZED';
+        return "UNAUTHORIZED";
       case HttpStatus.FORBIDDEN:
-        return 'FORBIDDEN';
+        return "FORBIDDEN";
       case HttpStatus.NOT_FOUND:
-        return 'NOT_FOUND';
+        return "NOT_FOUND";
       case HttpStatus.CONFLICT:
-        return 'CONFLICT';
+        return "CONFLICT";
       default:
-        return 'ERROR';
+        return "ERROR";
     }
   }
 }

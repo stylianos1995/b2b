@@ -4,9 +4,16 @@ import {
   MaxLength,
   IsIn,
   MinLength,
-} from 'class-validator';
+} from "class-validator";
 
-const BUSINESS_TYPES = ['restaurant', 'cafe', 'bar', 'hotel', 'catering', 'other'] as const;
+const BUSINESS_TYPES = [
+  "restaurant",
+  "cafe",
+  "bar",
+  "hotel",
+  "catering",
+  "other",
+] as const;
 
 export class CreateBusinessDto {
   @IsString()

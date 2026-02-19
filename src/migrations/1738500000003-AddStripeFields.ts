@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 /**
  * Adds Stripe-related columns for Checkout and webhook idempotency:
@@ -23,8 +23,14 @@ export class AddStripeFields1738500000003 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_invoices_stripe_session_id"`);
-    await queryRunner.query(`ALTER TABLE "invoices" DROP COLUMN IF EXISTS "stripe_session_id"`);
-    await queryRunner.query(`ALTER TABLE "payments" DROP COLUMN IF EXISTS "stripe_payment_intent_id"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_invoices_stripe_session_id"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "invoices" DROP COLUMN IF EXISTS "stripe_session_id"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "payments" DROP COLUMN IF EXISTS "stripe_payment_intent_id"`,
+    );
   }
 }

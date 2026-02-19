@@ -8,38 +8,38 @@ import {
   JoinColumn,
   Unique,
   Index,
-} from 'typeorm';
-import { User } from './user.entity';
-import { Business } from './business.entity';
+} from "typeorm";
+import { User } from "./user.entity";
+import { Business } from "./business.entity";
 
 /** @owner Identity Service */
-@Entity('business_users')
-@Unique(['user_id', 'business_id'])
-@Index(['business_id'])
+@Entity("business_users")
+@Unique(["user_id", "business_id"])
+@Index(["business_id"])
 export class BusinessUser {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: "uuid" })
   user_id: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: "uuid" })
   business_id: string;
 
-  @Column({ type: 'varchar', length: 30 })
+  @Column({ type: "varchar", length: 30 })
   role: string;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
+  @ManyToOne(() => User, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "user_id" })
   user: User;
 
-  @ManyToOne(() => Business, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'business_id' })
+  @ManyToOne(() => Business, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "business_id" })
   business: Business;
 }

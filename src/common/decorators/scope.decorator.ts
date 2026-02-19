@@ -1,7 +1,7 @@
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata } from "@nestjs/common";
 
-export const BUSINESS_SCOPE_KEY = 'business_scope';
-export const PROVIDER_SCOPE_KEY = 'provider_scope';
+export const BUSINESS_SCOPE_KEY = "business_scope";
+export const PROVIDER_SCOPE_KEY = "provider_scope";
 
 /**
  * Resolve business_id from principal membership; 403 if no business.

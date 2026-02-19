@@ -1,5 +1,5 @@
-import { Global, Module } from '@nestjs/common';
-import { IdempotencyStore } from './idempotency.store';
+import { Global, Module } from "@nestjs/common";
+import { IdempotencyStore } from "./idempotency.store";
 
 @Global()
 @Module({

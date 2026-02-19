@@ -1,5 +1,14 @@
-import { IsString, IsUUID, IsArray, ValidateNested, IsOptional, IsDateString, Min, IsNumber } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsString,
+  IsUUID,
+  IsArray,
+  ValidateNested,
+  IsOptional,
+  IsDateString,
+  Min,
+  IsNumber,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateOrderLineDto {
   @IsUUID()

@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 
 /**
  * Extract Idempotency-Key header for POST /buyer/orders, /invoices/:id/payments, /admin/payouts.
@@ -6,7 +6,9 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  */
 export const IdempotencyKey = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): string | undefined => {
-    const req = ctx.switchToHttp().getRequest() as { headers?: { 'idempotency-key'?: string } };
-    return req.headers?.['idempotency-key'];
+    const req = ctx.switchToHttp().getRequest() as {
+      headers?: { "idempotency-key"?: string };
+    };
+    return req.headers?.["idempotency-key"];
   },
 );

@@ -1,7 +1,7 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class InitialMvpSchema1738500000001 implements MigrationInterface {
-  name = 'InitialMvpSchema1738500000001';
+  name = "InitialMvpSchema1738500000001";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -22,8 +22,12 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_users_email" ON "users" ("email")`);
-    await queryRunner.query(`CREATE INDEX "idx_users_status" ON "users" ("status")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_users_email" ON "users" ("email")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_users_status" ON "users" ("status")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "businesses" (
@@ -41,7 +45,9 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_businesses_status" ON "businesses" ("status")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_businesses_status" ON "businesses" ("status")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "providers" (
@@ -62,8 +68,12 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_providers_status" ON "providers" ("status")`);
-    await queryRunner.query(`CREATE INDEX "idx_providers_provider_type" ON "providers" ("provider_type")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_providers_status" ON "providers" ("status")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_providers_provider_type" ON "providers" ("provider_type")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "business_users" (
@@ -76,7 +86,9 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         UNIQUE ("user_id", "business_id")
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_business_users_business_id" ON "business_users" ("business_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_business_users_business_id" ON "business_users" ("business_id")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "provider_users" (
@@ -89,7 +101,9 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         UNIQUE ("user_id", "provider_id")
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_provider_users_provider_id" ON "provider_users" ("provider_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_provider_users_provider_id" ON "provider_users" ("provider_id")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "sessions" (
@@ -101,9 +115,15 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "created_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_sessions_user_id" ON "sessions" ("user_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_sessions_token_hash" ON "sessions" ("token_hash")`);
-    await queryRunner.query(`CREATE INDEX "idx_sessions_expires_at" ON "sessions" ("expires_at")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_sessions_user_id" ON "sessions" ("user_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_sessions_token_hash" ON "sessions" ("token_hash")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_sessions_expires_at" ON "sessions" ("expires_at")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "locations" (
@@ -127,8 +147,12 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_locations_owner" ON "locations" ("owner_type", "owner_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_locations_postal_code" ON "locations" ("postal_code")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_locations_owner" ON "locations" ("owner_type", "owner_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_locations_postal_code" ON "locations" ("postal_code")`,
+    );
 
     await queryRunner.query(`
       ALTER TABLE "businesses"
@@ -147,7 +171,9 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         UNIQUE ("business_id", "provider_id")
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_preferred_suppliers_provider_id" ON "preferred_suppliers" ("provider_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_preferred_suppliers_provider_id" ON "preferred_suppliers" ("provider_id")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "products" (
@@ -171,8 +197,12 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         UNIQUE ("provider_id", "sku")
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_products_provider_active" ON "products" ("provider_id", "is_active")`);
-    await queryRunner.query(`CREATE INDEX "idx_products_category" ON "products" ("category")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_products_provider_active" ON "products" ("provider_id", "is_active")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_products_category" ON "products" ("category")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "availability" (
@@ -191,7 +221,9 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_availability_provider_id" ON "availability" ("provider_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_availability_provider_id" ON "availability" ("provider_id")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "orders" (
@@ -220,9 +252,15 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_orders_business_status_created" ON "orders" ("business_id", "status", "created_at" DESC)`);
-    await queryRunner.query(`CREATE INDEX "idx_orders_provider_status" ON "orders" ("provider_id", "status")`);
-    await queryRunner.query(`CREATE UNIQUE INDEX "idx_orders_order_number" ON "orders" ("order_number")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_orders_business_status_created" ON "orders" ("business_id", "status", "created_at" DESC)`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_orders_provider_status" ON "orders" ("provider_id", "status")`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "idx_orders_order_number" ON "orders" ("order_number")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "order_lines" (
@@ -240,7 +278,9 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_order_lines_order_id" ON "order_lines" ("order_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_order_lines_order_id" ON "order_lines" ("order_id")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "deliveries" (
@@ -257,8 +297,12 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE UNIQUE INDEX "idx_deliveries_order_id" ON "deliveries" ("order_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_deliveries_status" ON "deliveries" ("status")`);
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "idx_deliveries_order_id" ON "deliveries" ("order_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_deliveries_status" ON "deliveries" ("status")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "invoices" (
@@ -278,9 +322,15 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_invoices_provider_status" ON "invoices" ("provider_id", "status")`);
-    await queryRunner.query(`CREATE INDEX "idx_invoices_business_status" ON "invoices" ("business_id", "status")`);
-    await queryRunner.query(`CREATE UNIQUE INDEX "idx_invoices_invoice_number" ON "invoices" ("invoice_number")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_invoices_provider_status" ON "invoices" ("provider_id", "status")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_invoices_business_status" ON "invoices" ("business_id", "status")`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "idx_invoices_invoice_number" ON "invoices" ("invoice_number")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "invoice_lines" (
@@ -295,7 +345,9 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_invoice_lines_invoice_id" ON "invoice_lines" ("invoice_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_invoice_lines_invoice_id" ON "invoice_lines" ("invoice_id")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "payments" (
@@ -313,9 +365,15 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE INDEX "idx_payments_invoice_id" ON "payments" ("invoice_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_payments_business_id" ON "payments" ("business_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_payments_status" ON "payments" ("status")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_payments_invoice_id" ON "payments" ("invoice_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_payments_business_id" ON "payments" ("business_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_payments_status" ON "payments" ("status")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "ratings" (
@@ -331,8 +389,12 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
         "updated_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
-    await queryRunner.query(`CREATE UNIQUE INDEX "idx_ratings_order_id" ON "ratings" ("order_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_ratings_provider_id" ON "ratings" ("provider_id")`);
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "idx_ratings_order_id" ON "ratings" ("order_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_ratings_provider_id" ON "ratings" ("provider_id")`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -346,7 +408,9 @@ export class InitialMvpSchema1738500000001 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS "availability"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "products"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "preferred_suppliers"`);
-    await queryRunner.query(`ALTER TABLE "businesses" DROP CONSTRAINT IF EXISTS "fk_businesses_default_delivery"`);
+    await queryRunner.query(
+      `ALTER TABLE "businesses" DROP CONSTRAINT IF EXISTS "fk_businesses_default_delivery"`,
+    );
     await queryRunner.query(`DROP TABLE IF EXISTS "locations"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "sessions"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "provider_users"`);

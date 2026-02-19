@@ -1,6 +1,13 @@
-import { IsString, IsOptional, MaxLength, IsIn } from 'class-validator';
+import { IsString, IsOptional, MaxLength, IsIn } from "class-validator";
 
-const BUSINESS_TYPES = ['restaurant', 'cafe', 'bar', 'hotel', 'catering', 'other'] as const;
+const BUSINESS_TYPES = [
+  "restaurant",
+  "cafe",
+  "bar",
+  "hotel",
+  "catering",
+  "other",
+] as const;
 
 export class UpdateBusinessDto {
   @IsOptional()

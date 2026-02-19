@@ -1,5 +1,5 @@
-import { Injectable, ExecutionContext } from '@nestjs/common';
-import { RequestContext } from '../../common/interfaces/request-context.interface';
+import { Injectable, ExecutionContext } from "@nestjs/common";
+import { RequestContext } from "../../common/interfaces/request-context.interface";
 
 /**
  * Resolve the current principal (user + memberships) from the request.

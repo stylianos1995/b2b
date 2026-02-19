@@ -1,5 +1,5 @@
-import { IsOptional, IsInt, Min, Max } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsInt, Min, Max } from "class-validator";
+import { Type } from "class-transformer";
 
 /**
  * Cursor/limit pagination for list endpoints.

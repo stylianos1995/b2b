@@ -1,8 +1,16 @@
-import { IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsOptional, MaxLength, IsIn } from "class-validator";
 
 const PROVIDER_TYPES = [
-  'food_wholesaler', 'beverage_distributor', 'coffee_roaster', 'bakery',
-  'meat_fish', 'cleaning', 'equipment', 'logistics', 'producer', 'other',
+  "food_wholesaler",
+  "beverage_distributor",
+  "coffee_roaster",
+  "bakery",
+  "meat_fish",
+  "cleaning",
+  "equipment",
+  "logistics",
+  "producer",
+  "other",
 ] as const;
 
 export class UpdateProviderDto {
@@ -19,6 +27,7 @@ export class UpdateProviderDto {
   @IsOptional()
   @IsString()
   @MaxLength(50)
+  @IsIn([...PROVIDER_TYPES])
   provider_type?: string;
 
   @IsOptional()

@@ -1,9 +1,9 @@
-import { IsString, IsIn, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsIn, IsOptional, MaxLength } from "class-validator";
 
 export class UpdateOrderStatusDto {
   @IsString()
-  @IsIn(['preparing', 'shipped'])
-  status: 'preparing' | 'shipped';
+  @IsIn(["preparing", "shipped"])
+  status: "preparing" | "shipped";
 
   @IsOptional()
   @IsString()

@@ -1,8 +1,22 @@
-import { IsString, IsOptional, MaxLength, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  MaxLength,
+  MinLength,
+  IsIn,
+} from "class-validator";
 
 const PROVIDER_TYPES = [
-  'food_wholesaler', 'beverage_distributor', 'coffee_roaster', 'bakery',
-  'meat_fish', 'cleaning', 'equipment', 'logistics', 'producer', 'other',
+  "food_wholesaler",
+  "beverage_distributor",
+  "coffee_roaster",
+  "bakery",
+  "meat_fish",
+  "cleaning",
+  "equipment",
+  "logistics",
+  "producer",
+  "other",
 ] as const;
 
 export class CreateProviderDto {
@@ -16,6 +30,7 @@ export class CreateProviderDto {
 
   @IsString()
   @MaxLength(50)
+  @IsIn([...PROVIDER_TYPES])
   provider_type: string;
 
   @IsOptional()

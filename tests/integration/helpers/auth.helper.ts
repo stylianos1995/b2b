@@ -1,5 +1,5 @@
-import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
+import { INestApplication } from "@nestjs/common";
+import request from "supertest";
 
 export async function login(
   app: INestApplication,
@@ -7,7 +7,7 @@ export async function login(
   password: string,
 ): Promise<{ access_token: string }> {
   const res = await request(app.getHttpServer())
-    .post('/v1/auth/login')
+    .post("/v1/auth/login")
     .send({ email, password })
     .expect(200);
   return res.body;

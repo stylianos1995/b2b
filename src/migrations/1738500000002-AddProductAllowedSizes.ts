@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddProductAllowedSizes1738500000002 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -9,6 +9,8 @@ export class AddProductAllowedSizes1738500000002 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "products" DROP COLUMN IF EXISTS "allowed_sizes"`);
+    await queryRunner.query(
+      `ALTER TABLE "products" DROP COLUMN IF EXISTS "allowed_sizes"`,
+    );
   }
 }

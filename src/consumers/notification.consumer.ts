@@ -1,15 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
-import { EVENT_NAMES } from '../events/event-names';
-import { NotificationService } from '../notifications/notification.service';
+import { Injectable } from "@nestjs/common";
+import { OnEvent } from "@nestjs/event-emitter";
+import { EVENT_NAMES } from "../events/event-names";
+import { NotificationService } from "../notifications/notification.service";
 
 @Injectable()
 export class NotificationConsumer {
   constructor(private readonly notificationService: NotificationService) {}
 
   @OnEvent(EVENT_NAMES.USER_REGISTERED)
-  async handleUserRegistered(payload: { email: string; user_id: string }): Promise<void> {
-    await this.notificationService.sendWelcomeEmail(payload.email, { userId: payload.user_id });
+  async handleUserRegistered(payload: {
+    email: string;
+    user_id: string;
+  }): Promise<void> {
+    await this.notificationService.sendWelcomeEmail(payload.email, {
+      userId: payload.user_id,
+    });
   }
 
   @OnEvent(EVENT_NAMES.ORDER_PLACED)
@@ -59,7 +64,9 @@ export class NotificationConsumer {
   }
 
   @OnEvent(EVENT_NAMES.PROVIDER_VERIFIED)
-  async handleProviderVerified(payload: { provider_id: string }): Promise<void> {
+  async handleProviderVerified(payload: {
+    provider_id: string;
+  }): Promise<void> {
     await this.notificationService.sendProviderVerified(payload);
   }
 }

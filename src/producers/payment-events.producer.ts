@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { EventBusService } from '../events/event-bus.service';
-import { EVENT_NAMES } from '../events/event-names';
+import { Injectable } from "@nestjs/common";
+import { v4 as uuidv4 } from "uuid";
+import { EventBusService } from "../events/event-bus.service";
+import { EVENT_NAMES } from "../events/event-names";
 import {
   InvoiceGeneratedPayload,
   PaymentInitiatedPayload,
   PaymentCompletedPayload,
   PayoutExecutedPayload,
-} from '../events/event.types';
+} from "../events/event.types";
 
 @Injectable()
 export class PaymentEventsProducer {
@@ -22,8 +22,8 @@ export class PaymentEventsProducer {
     const payload: InvoiceGeneratedPayload = {
       event_id: uuidv4(),
       event_type: EVENT_NAMES.INVOICE_GENERATED,
-      schema_version: '1.0',
-      producer_service: 'payment',
+      schema_version: "1.0",
+      producer_service: "payment",
       occurred_at: new Date().toISOString(),
       invoice_id: params.invoice_id,
       provider_id: params.provider_id,
@@ -44,8 +44,8 @@ export class PaymentEventsProducer {
     const payload: PaymentInitiatedPayload = {
       event_id: uuidv4(),
       event_type: EVENT_NAMES.PAYMENT_INITIATED,
-      schema_version: '1.0',
-      producer_service: 'payment',
+      schema_version: "1.0",
+      producer_service: "payment",
       occurred_at: new Date().toISOString(),
       payment_id: params.payment_id,
       payable_type: params.payable_type,
@@ -66,8 +66,8 @@ export class PaymentEventsProducer {
     const payload: PaymentCompletedPayload = {
       event_id: uuidv4(),
       event_type: EVENT_NAMES.PAYMENT_COMPLETED,
-      schema_version: '1.0',
-      producer_service: 'payment',
+      schema_version: "1.0",
+      producer_service: "payment",
       occurred_at: new Date().toISOString(),
       payment_id: params.payment_id,
       payable_type: params.payable_type,
@@ -87,8 +87,8 @@ export class PaymentEventsProducer {
     const payload: PayoutExecutedPayload = {
       event_id: uuidv4(),
       event_type: EVENT_NAMES.PAYOUT_EXECUTED,
-      schema_version: '1.0',
-      producer_service: 'payment',
+      schema_version: "1.0",
+      producer_service: "payment",
       occurred_at: new Date().toISOString(),
       payout_id: params.payout_id,
       provider_id: params.provider_id,

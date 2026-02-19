@@ -1,4 +1,4 @@
 export const configModuleOptions = {
   isGlobal: true,
-  envFilePath: ['.env.local', '.env'],
+  envFilePath: [".env.local", ".env"],
 };

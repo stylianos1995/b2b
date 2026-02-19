@@ -1,17 +1,25 @@
-import { IsOptional, IsInt, Min, Max, IsIn, IsString, MaxLength } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsOptional,
+  IsInt,
+  Min,
+  Max,
+  IsIn,
+  IsString,
+  MaxLength,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 const PROVIDER_TYPES = [
-  'food_wholesaler',
-  'beverage_distributor',
-  'coffee_roaster',
-  'bakery',
-  'meat_fish',
-  'cleaning',
-  'equipment',
-  'logistics',
-  'producer',
-  'other',
+  "food_wholesaler",
+  "beverage_distributor",
+  "coffee_roaster",
+  "bakery",
+  "meat_fish",
+  "cleaning",
+  "equipment",
+  "logistics",
+  "producer",
+  "other",
 ] as const;
 
 export class ListDiscoveryProvidersQueryDto {
