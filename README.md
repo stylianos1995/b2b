@@ -6,41 +6,43 @@ A two-sided marketplace connecting **hospitality businesses (buyers)** with **su
 
 ## What this app does
 
-- **Buyers** (restaurants, cafés, hotels, etc.):
-  - Register and add their business and delivery addresses.
-  - Discover providers by **type** (e.g. food wholesaler, bakery) and **location** (postcode).
-  - Browse provider catalogs, add items to cart, and place orders with a requested delivery date.
-  - Track orders (cancel if still in draft/submitted), view and **pay invoices** via Stripe Checkout, and download invoice PDFs.
+**Buyers** (restaurants, cafés, hotels):
 
-- **Providers** (suppliers, wholesalers, producers):
-  - Register and create a provider profile with address.
-  - Add products (name, price, unit, category, etc.).
-  - Receive orders, **confirm or reject** them, then manage delivery: mark as preparing → **dispatched** (shipped) → delivered.
-  - **Filter orders** by status and date (default: last 7 days).
-  - Create invoices after delivery; buyers pay via Stripe.
+- Register and add their business and delivery addresses
+- Discover providers by **type** (e.g. food wholesaler, bakery) and **location** (postcode)
+- Browse catalogs, add items to cart, place orders with a requested delivery date
+- Track orders (cancel if still submitted), view and **pay invoices** via Stripe Checkout, download invoice PDFs
 
-- **Platform**: JWT-based auth, role-based access (business_owner, provider_owner, etc.), PostgreSQL persistence, and optional Stripe webhooks so invoices are marked paid automatically.
+**Providers** (suppliers, wholesalers, producers):
+
+- Register and create a provider profile with address
+- Add products (name, price, unit, category)
+- Receive orders, **confirm or reject**, then manage delivery: preparing → **dispatched** → delivered
+- **Filter orders** by status and date (default: last 7 days)
+- Create invoices after delivery; buyers pay via Stripe
+
+**Platform:** JWT auth, role-based access, PostgreSQL, optional Stripe webhooks for automatic invoice status updates.
 
 ---
 
 ## Tech stack
 
-| Layer      | Technology |
-| ---------- | ---------- |
-| Backend    | **NestJS** (Node.js), TypeScript, TypeORM, PostgreSQL, JWT, Stripe, PDFKit (invoice PDFs) |
-| Frontend   | **React 19**, **Vite**, TypeScript, React Router |
-| Database   | **PostgreSQL 15+** |
-| Payments   | **Stripe** (Checkout for invoices) |
+| Layer    | Technology |
+| -------- | ---------- |
+| Backend  | NestJS, TypeScript, TypeORM, PostgreSQL, JWT, Stripe, PDFKit |
+| Frontend | React 19, Vite, TypeScript, React Router |
+| Database | PostgreSQL 15+ |
+| Payments | Stripe (Checkout for invoices) |
 
-The API runs on port **3000**; the frontend dev server on **5173** and proxies `/v1` to the API.
+API: port **3000**. Frontend: port **5173** (proxies `/v1` to the API).
 
 ---
 
 ## Prerequisites
 
 - **Node.js** (LTS) from [nodejs.org](https://nodejs.org)
-- **PostgreSQL 15+** (local install or Docker)
-- (Optional) **Stripe** test account for payments — see [docs/PAYMENT-TESTING.md](docs/PAYMENT-TESTING.md)
+- **PostgreSQL 15+** (local or Docker)
+- Optional: **Stripe** test account — see [docs/PAYMENT-TESTING.md](docs/PAYMENT-TESTING.md)
 
 ---
 
@@ -49,7 +51,7 @@ The API runs on port **3000**; the frontend dev server on **5173** and proxies `
 ### 1. Clone and install
 
 ```bash
-cd B2B
+cd b2b
 npm install
 cd frontend && npm install && cd ..
 ```
@@ -74,7 +76,7 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-Edit **.env**:
+Edit `.env`:
 
 ```env
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/b2b_mvp
@@ -82,7 +84,7 @@ JWT_SECRET=your-jwt-secret-change-in-production
 FRONTEND_URL=http://localhost:5173
 ```
 
-For **Stripe** (payments): add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (and optionally `STRIPE_PUBLIC_KEY`). See [docs/PAYMENT-TESTING.md](docs/PAYMENT-TESTING.md).
+For payments, add Stripe keys. See [docs/PAYMENT-TESTING.md](docs/PAYMENT-TESTING.md).
 
 ### 4. Migrations and seed
 
@@ -90,16 +92,13 @@ For **Stripe** (payments): add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (and
 npm run migrate
 ```
 
-Then seed data (choose one):
+Seed data:
 
-- **From the test page:** Start the API (step 5), open **test-api.html** in the browser, click **1. Run seed**, then **2. Fix seed passwords**.
-- **From command line** (if you have `psql`):
+- **Test page:** Start the API (step 5), open `test-api.html`, click **1. Run seed**, then **2. Fix seed passwords**
+- **Command line** (if you have `psql`):
+
   ```bash
-  # PowerShell
-  $env:DATABASE_URL = (Get-Content .env | Where-Object { $_ -match '^DATABASE_URL=' }) -replace '^DATABASE_URL=',''
   psql $env:DATABASE_URL -f src/seeds/seed-mvp.sql
-
-  # Then fix passwords (Node)
   npm run seed:fix-passwords
   ```
 
@@ -122,190 +121,99 @@ Open **http://localhost:5173**.
 
 ### 6. Log in
 
-Use the test page (**test-api.html**) or the frontend login:
-
 - **Buyer:** `buyer@mvp.local` / `password`
 - **Provider:** `provider@mvp.local` / `password`
-
-(Other seed users are in `src/seeds/seed-mvp.sql`.)
 
 ---
 
 ## Environment variables
 
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
-| `DATABASE_URL` | Yes | PostgreSQL connection string (e.g. `postgresql://user:pass@localhost:5432/b2b_mvp`) |
-| `JWT_SECRET` | Yes | Secret for signing JWTs (use a long random string in production) |
-| `PORT` | No | API port (default `3000`) |
-| `FRONTEND_URL` | No | Frontend origin for Stripe redirects (default `http://localhost:5173`) |
-| `STRIPE_SECRET_KEY` | For payments | Stripe secret key (test: `sk_test_...`) |
-| `STRIPE_WEBHOOK_SECRET` | For payments | Webhook signing secret (`whsec_...`) for marking invoices paid |
-| `STRIPE_PUBLIC_KEY` | No | Only if using Stripe.js in frontend |
-| `JWT_EXPIRES_IN` | No | JWT expiry (default `15m`) |
+| Variable              | Required | Description                    |
+| --------------------- | -------- | ------------------------------ |
+| `DATABASE_URL`        | Yes      | PostgreSQL connection string   |
+| `JWT_SECRET`          | Yes      | Secret for signing JWTs       |
+| `PORT`                | No       | API port (default `3000`)     |
+| `FRONTEND_URL`        | No       | Frontend URL for Stripe (default `http://localhost:5173`) |
+| `STRIPE_SECRET_KEY`   | Payments | Stripe secret key             |
+| `STRIPE_WEBHOOK_SECRET` | Payments | Webhook signing secret       |
 
-See **.env.example** for the full list.
+See `.env.example` for the full list.
 
 ---
 
-## How to operate the app
+## How to use the app
 
-### Buyer flow
+**Buyer:** Dashboard → My Business (add address) → Discover (filter by type/postcode) → View catalog → Place order → My Orders / My Invoices (pay or download PDF).
 
-1. Log in as a buyer → **Dashboard**.
-2. **My Business:** Add company details and at least one **delivery address**.
-3. **Discover:** Filter by provider type and/or postcode; open a provider → **View catalog & order**.
-4. In the catalog: choose delivery address, delivery date, add items, **Place order**.
-5. **My Orders:** Track status; **Cancel** if still submitted.
-6. **My Invoices:** Open an invoice → **Pay** (Stripe Checkout) or **Download PDF**.
+**Provider:** Dashboard → Profile → Products → Orders (filter by status/date) → Confirm/Reject → Mark preparing → Mark dispatched → Mark delivered → Create invoice.
 
-### Provider flow
-
-1. Log in as a provider → **Dashboard**.
-2. **Profile:** Create/update provider and address.
-3. **Products:** Add products (name, SKU, price, unit, category).
-4. **Orders:** Use filters (status, date range — default last 7 days). Open an order → **Confirm** or **Reject**.
-5. For confirmed orders: **Mark preparing** → **Mark dispatched** (sets order to shipped and delivery to in transit) → **Mark delivered**.
-6. After delivery: **Create invoice**. Buyer pays; optional **Download PDF** from **Invoices**.
-
-### Test page
-
-**test-api.html** in the project root lets you run seed, fix passwords, and log in via the API without the frontend (useful for quick checks).
+**Test page:** `test-api.html` in the project root for seed, fix passwords, and API login.
 
 ---
 
 ## Project structure
 
 ```
-B2B/
-├── src/                    # NestJS backend
-│   ├── main.ts
-│   ├── auth/               # JWT, guards, strategies
-│   ├── config/              # TypeORM, env
-│   ├── entities/            # User, Business, Provider, Order, Invoice, etc.
-│   ├── modules/             # order, payment, discovery, delivery, business, provider, admin
+b2b/
+├── src/                 # NestJS backend
+│   ├── auth/            # JWT, guards
+│   ├── config/          # TypeORM
+│   ├── entities/
+│   ├── modules/         # order, payment, discovery, delivery, business, provider, admin
 │   ├── migrations/
-│   └── seeds/               # seed-mvp.sql
-├── frontend/                # React + Vite
-│   ├── src/
-│   │   ├── api/             # API client (auth, orders, discovery, invoices, delivery)
-│   │   ├── components/      # Layout, DashboardLayout, Footer
-│   │   ├── context/         # AuthContext
-│   │   ├── pages/           # buyer/*, provider/*, Login, Register, Settings
-│   │   └── types/
-│   └── vite.config.ts       # proxy /v1 → localhost:3000
-├── docs/                    # Architecture, flows, payment testing
-├── test-api.html            # Quick API/login test page
+│   └── seeds/
+├── frontend/            # React + Vite
+│   └── src/             # api, components, pages, context
+├── docs/                # Architecture, payment testing
+├── test-api.html
 ├── .env.example
-├── SETUP.md                 # Short setup guide
-└── README.md                # This file
+└── README.md
 ```
+
+---
+
+## Scripts
+
+| Command                    | Description              |
+| -------------------------- | ------------------------ |
+| `npm run start:dev`       | Start API (watch)        |
+| `npm run build`           | Build API                |
+| `npm run migrate`         | Run migrations           |
+| `npm run seed:fix-passwords` | Fix seed user passwords |
+| `npm run lint`            | ESLint                   |
+| `npm run test`            | Unit tests               |
+
+**Frontend** (from `frontend/`): `npm run dev` | `npm run build` | `npm run preview`
 
 ---
 
 ## Pushing to GitHub
 
-### 1. Ensure sensitive files are ignored
-
-Create a **.gitignore** in the project root if you don’t have one. It should include at least:
-
-```gitignore
-# Dependencies
-node_modules/
-frontend/node_modules/
-
-# Environment (never commit secrets)
-.env
-.env.local
-.env.*.local
-
-# Build output
-dist/
-frontend/dist/
-
-# Logs and OS
-*.log
-.DS_Store
-Thumbs.db
-
-# IDE
-.idea/
-.vscode/
-*.swp
-```
-
-Do **not** commit `.env` (it contains `DATABASE_URL`, `JWT_SECRET`, and possibly Stripe keys). Only commit `.env.example` (with placeholder values).
-
-### 2. Initialize Git (if needed) and add remote
+1. Ensure `.gitignore` exists and includes `node_modules/`, `.env`, `dist/`
+2. Do **not** commit `.env`
+3. Then:
 
 ```bash
 git init
 git add .
-git status   # confirm .env is not listed
 git commit -m "Initial commit: B2B Marketplace MVP"
-```
-
-Create a **new repository** on GitHub (do not add a README or .gitignore there if you already have them locally). Then:
-
-```bash
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+git remote add origin https://github.com/stylianos1995/b2b.git
 git branch -M main
 git push -u origin main
 ```
 
-### 3. Collaborators and CI
-
-- Add collaborators in GitHub: **Settings → Collaborators**.
-- For CI (e.g. lint, test, build), use **GitHub Actions** and store secrets (e.g. `DATABASE_URL`, `JWT_SECRET`) in **Settings → Secrets and variables → Actions**. Never put real secrets in the repo.
-
-### 4. After clone (other machines or teammates)
-
-They should:
-
-1. Clone the repo.
-2. Run `npm install` (and `npm install` in `frontend/`).
-3. Copy `.env.example` to `.env` and set `DATABASE_URL`, `JWT_SECRET`, etc.
-4. Run `npm run migrate`, then seed (see Quick start).
-5. Start API and frontend as in **Run the app** above.
+Use a **Personal Access Token** as password when Git prompts for credentials.
 
 ---
 
-## Scripts reference
+## More docs
 
-| Command | Description |
-| ------- | ----------- |
-| `npm run start:dev` | Start API in watch mode (port 3000) |
-| `npm run start:prod` | Start API production build (`node dist/main`) |
-| `npm run build` | Build API (`dist/`) |
-| `npm run migrate` | Run TypeORM migrations |
-| `npm run migrate:revert` | Revert last migration |
-| `npm run seed` | Run seed SQL (requires `psql` and `DATABASE_URL`) |
-| `npm run seed:fix-passwords` | Set seed user passwords to `password` (Node script) |
-| `npm run test` | Run unit tests |
-| `npm run test:e2e` | Run E2E tests (see test docs for Stripe/env) |
-| `npm run lint` | Run ESLint |
-| `npm run typecheck` | TypeScript check |
-
-**Frontend** (from `frontend/`):
-
-| Command | Description |
-| ------- | ----------- |
-| `npm run dev` | Start Vite dev server (port 5173) |
-| `npm run build` | Build for production (`dist/`) |
-| `npm run preview` | Serve production build locally |
-
----
-
-## Further documentation
-
-- **[SETUP.md](SETUP.md)** — Short setup and seed steps.
-- **[docs/PAYMENT-TESTING.md](docs/PAYMENT-TESTING.md)** — Stripe test keys, webhooks, and test cards.
-- **[docs/](docs/)** — System design, user flows, architecture, DB schema, and MVP feature map.
+- [SETUP.md](SETUP.md) — Short setup guide
+- [docs/PAYMENT-TESTING.md](docs/PAYMENT-TESTING.md) — Stripe testing
+- [docs/](docs/) — System design, flows, schema
 
 ---
 
 ## License
 
-Private or per your organization’s policy.
-#   b 2 b  
- 
+Private or per your organization's policy.
