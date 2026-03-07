@@ -1,4 +1,13 @@
-import { IsString, IsOptional, MaxLength, IsIn } from "class-validator";
+import {
+  IsString,
+  IsOptional,
+  MaxLength,
+  IsIn,
+  IsNumber,
+  Min,
+  ValidateIf,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 const PROVIDER_TYPES = [
   "food_wholesaler",
@@ -43,4 +52,12 @@ export class UpdateProviderDto {
   @IsString()
   @MaxLength(3)
   default_currency?: string;
+
+  /** Minimum order total (in default_currency). Orders below this are rejected. Leave empty for no minimum. */
+  @IsOptional()
+  @ValidateIf((_o, v) => v != null && v !== "")
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  min_order_value?: number | null;
 }

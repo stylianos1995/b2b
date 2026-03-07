@@ -43,7 +43,7 @@ export class Provider {
   @Column({ type: "text", nullable: true })
   description: string | null;
 
-  @Column({ type: "varchar", length: 3, default: "GBP" })
+  @Column({ type: "varchar", length: 3, default: "EUR" })
   default_currency: string;
 
   @Column({ type: "decimal", precision: 12, scale: 2, nullable: true })

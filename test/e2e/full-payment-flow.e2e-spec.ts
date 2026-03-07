@@ -30,6 +30,9 @@ import { AppModule } from "../../src/app.module";
 
 const PREFIX = "/v1";
 
+const hasStripeKeys =
+  !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
+
 describe("Full payment flow (e2e)", () => {
   let app: INestApplication;
   let dataSource: DataSource;
@@ -49,11 +52,6 @@ describe("Full payment flow (e2e)", () => {
     const dbUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL;
     if (!dbUrl) {
       throw new Error("Set DATABASE_URL or TEST_DATABASE_URL for e2e tests");
-    }
-    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
-      throw new Error(
-        "Set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET for e2e tests (e.g. in .env or .env.local).",
-      );
     }
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -130,6 +128,7 @@ describe("Full payment flow (e2e)", () => {
   }
 
   it("runs full lifecycle: register → business → provider → product → order → confirm → deliver → invoice → checkout → webhook → assert idempotency", async () => {
+    if (!hasStripeKeys) return;
     const buyerEmail = `buyer-e2e-${Date.now()}@test.local`;
     const providerEmail = `provider-e2e-${Date.now()}@test.local`;
     const password = "password12345";
@@ -354,6 +353,7 @@ describe("Full payment flow (e2e)", () => {
   });
 
   it("rejects webhook with invalid signature", async () => {
+    if (!hasStripeKeys) return;
     const payload = JSON.stringify({
       type: "checkout.session.completed",
       data: { object: { id: "cs_fake" } },
@@ -364,5 +364,120 @@ describe("Full payment flow (e2e)", () => {
       .set("Content-Type", "application/json")
       .send(payload)
       .expect(400);
+  });
+
+  it("runs order → confirm → deliver → invoice without Stripe (no checkout)", async () => {
+    const buyerEmail = `buyer-flow-${Date.now()}@test.local`;
+    const providerEmail = `provider-flow-${Date.now()}@test.local`;
+    const password = "password12345";
+
+    await register(buyerEmail, password, "Buyer", "Flow");
+    const buyerT = await login(buyerEmail, password);
+    const createBiz = await request(app.getHttpServer())
+      .post(`${PREFIX}/businesses`)
+      .set("Authorization", `Bearer ${buyerT}`)
+      .send({
+        legal_name: "Flow Business Ltd",
+        trading_name: "Flow Business",
+        business_type: "restaurant",
+        address_line_1: "1 Flow St",
+        city: "London",
+        region: "Greater London",
+        postal_code: "SW1A 1AA",
+        country: "GB",
+      })
+      .expect(201);
+    const bizId = (createBiz.body as { business_id: string }).business_id;
+    const getBiz = await request(app.getHttpServer())
+      .get(`${PREFIX}/businesses/${bizId}`)
+      .set("Authorization", `Bearer ${buyerT}`)
+      .expect(200);
+    const locId = (getBiz.body as { default_delivery_address_id: string })
+      .default_delivery_address_id;
+    if (!locId) throw new Error("No default_delivery_address_id");
+
+    await register(providerEmail, password, "Provider", "Flow");
+    const providerT = await login(providerEmail, password);
+    const createProv = await request(app.getHttpServer())
+      .post(`${PREFIX}/providers`)
+      .set("Authorization", `Bearer ${providerT}`)
+      .send({
+        legal_name: "Flow Provider Ltd",
+        trading_name: "Flow Provider",
+        provider_type: "food_wholesaler",
+        address_line_1: "2 Flow Rd",
+        city: "Manchester",
+        region: "Greater Manchester",
+        postal_code: "M1 1AA",
+        country: "GB",
+      })
+      .expect(201);
+    const provId = (createProv.body as { provider_id: string }).provider_id;
+    await dataSource.query("UPDATE providers SET status = $1 WHERE id = $2", [
+      "active",
+      provId,
+    ]);
+
+    const createProd = await request(app.getHttpServer())
+      .post(`${PREFIX}/providers/${provId}/products`)
+      .set("Authorization", `Bearer ${providerT}`)
+      .send({
+        sku: "FLOW-SKU-001",
+        name: "Flow Test Product",
+        category: "dry_goods",
+        unit: "kg",
+        price: 5,
+        currency: "GBP",
+        tax_rate: 0,
+      })
+      .expect(201);
+    const prodId = (createProd.body as { product_id: string }).product_id;
+
+    const reqDate = new Date();
+    reqDate.setDate(reqDate.getDate() + 7);
+    const placeOrder = await request(app.getHttpServer())
+      .post(`${PREFIX}/buyer/orders`)
+      .set("Authorization", `Bearer ${buyerT}`)
+      .set("Idempotency-Key", "e2e-flow-" + Date.now())
+      .send({
+        provider_id: provId,
+        delivery_location_id: locId,
+        requested_delivery_date: reqDate.toISOString().slice(0, 10),
+        lines: [{ product_id: prodId, quantity: 1 }],
+      })
+      .expect(201);
+    const oid = (placeOrder.body as { order_id: string }).order_id;
+
+    await request(app.getHttpServer())
+      .post(`${PREFIX}/provider/orders/${oid}/confirm`)
+      .set("Authorization", `Bearer ${providerT}`)
+      .send({})
+      .expect(201);
+
+    const getOrder = await request(app.getHttpServer())
+      .get(`${PREFIX}/provider/orders/${oid}`)
+      .set("Authorization", `Bearer ${providerT}`)
+      .expect(200);
+    const delId = (getOrder.body as { delivery_id: string }).delivery_id;
+    if (!delId) throw new Error("No delivery_id after confirm");
+
+    await request(app.getHttpServer())
+      .patch(`${PREFIX}/deliveries/${delId}`)
+      .set("Authorization", `Bearer ${providerT}`)
+      .send({ status: "delivered" })
+      .expect(200);
+
+    const createInv = await request(app.getHttpServer())
+      .post(`${PREFIX}/invoices`)
+      .set("Authorization", `Bearer ${providerT}`)
+      .send({ order_id: oid })
+      .expect(201);
+    const invId = (createInv.body as { invoice_id: string }).invoice_id;
+
+    const invRow = await dataSource.query(
+      "SELECT status FROM invoices WHERE id = $1",
+      [invId],
+    );
+    expect(invRow[0].status).toBe("issued");
   });
 });

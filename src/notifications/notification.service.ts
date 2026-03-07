@@ -93,4 +93,13 @@ export class NotificationService {
     const html = `<p>Your provider account (${payload.provider_id}) is now active.</p>`;
     await this.send("provider@example.com", subject, html);
   }
+
+  async sendPasswordResetEmail(
+    email: string,
+    resetLink: string,
+  ): Promise<void> {
+    const subject = "Reset your password";
+    const html = `<p>You requested a password reset.</p><p><a href="${resetLink}">Reset password</a></p><p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>`;
+    await this.send(email, subject, html);
+  }
 }

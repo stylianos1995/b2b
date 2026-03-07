@@ -6,7 +6,6 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  NotImplementedException,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { SeedService } from "../seeds/seed.service";
@@ -17,6 +16,8 @@ import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
 import { ChangeEmailDto } from "./dto/change-email.dto";
 import { DeleteAccountDto } from "./dto/delete-account.dto";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { Public } from "./decorators/public.decorator";
 import { CurrentUser } from "./decorators/current-user.decorator";
 import { RequestContext } from "../common/interfaces/request-context.interface";
@@ -125,14 +126,16 @@ export class AuthController {
   @Public()
   @Post("forgot-password")
   @HttpCode(HttpStatus.OK)
-  async forgotPassword() {
-    throw new NotImplementedException("Use support flow for MVP");
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.authService.forgotPassword(dto);
+    return { message: "If an account exists, you will receive a reset link by email." };
   }
 
   @Public()
   @Post("reset-password")
   @HttpCode(HttpStatus.OK)
-  async resetPassword() {
-    throw new NotImplementedException("Use support flow for MVP");
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.authService.resetPassword(dto);
+    return { message: "Password has been reset. You can now log in." };
   }
 }

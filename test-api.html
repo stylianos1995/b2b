@@ -19,12 +19,12 @@
   <input type="email" id="email" placeholder="e.g. buyer@mvp.local" value="buyer@mvp.local" />
   <label>Password</label>
   <input type="password" id="password" placeholder="password" value="password" autocomplete="current-password" />
-  <p style="font-size: 12px; color: #666;">Seed users: <strong>buyer@mvp.local</strong> / <strong>password</strong> (lowercase).</p>
+  <p style="font-size: 12px; color: #666;">Seed users: <strong>buyer@mvp.local</strong> / <strong>password</strong> (lowercase). After E2E tests the DB is empty — run seed and fix passwords first.</p>
   <button type="button" id="btnRunSeed">1. Run seed</button>
-  <button type="button" id="btnFixPasswords">2. Fix seed passwords (if login still fails)</button>
+  <button type="button" id="btnFixPasswords">2. Fix seed passwords</button>
   <button type="button" id="btnLogin">3. Login</button>
   <h2>Response</h2>
-  <pre id="out">Click 1 (Run seed), then 3 (Login). Use buyer@mvp.local / password.</pre>
+  <pre id="out">Click 1 (Run seed), then 2 (Fix seed passwords), then 3 (Login). If you get 401, run 1 and 2 again — e.g. after E2E tests the DB is truncated.</pre>
 
   <script>
     const baseUrl = () => document.getElementById('baseUrl').value.trim();

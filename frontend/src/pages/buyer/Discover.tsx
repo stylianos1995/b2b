@@ -96,6 +96,11 @@ export function Discover() {
                 <span style={{ color: "#64748b", fontSize: "0.875rem", marginLeft: "0.5rem" }}>
                   {p.provider_type?.replace(/_/g, " ") ?? ""}
                 </span>
+                {p.min_order_value != null && Number(p.min_order_value) > 0 && (
+                  <div style={{ fontSize: "0.875rem", color: "#475569", marginTop: "0.25rem" }}>
+                    Min. order: {Number(p.min_order_value).toFixed(2)} {p.default_currency ?? "EUR"}
+                  </div>
+                )}
               </div>
               <Link
                 to={`/buyer/providers/${p.id}`}

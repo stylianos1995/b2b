@@ -15,6 +15,8 @@ import { InfoSection } from "./components/home/InfoSection";
 import { useAuth } from "./context/AuthContext";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
 import { About } from "./pages/About";
 import { Contact } from "./pages/Contact";
 import { BuyerDashboard } from "./pages/buyer/BuyerDashboard";
@@ -66,6 +68,8 @@ export default function App() {
         <Route path="contact" element={<Contact />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
         <Route
           path="buyer"
           element={

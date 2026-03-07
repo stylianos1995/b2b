@@ -56,6 +56,9 @@ export function Login() {
       <p style={{ marginTop: "1rem" }}>
         No account? <Link to="/register">Register</Link>
       </p>
+      <p style={{ marginTop: "0.5rem" }}>
+        <Link to="/forgot-password">Forgot password?</Link>
+      </p>
     </div>
   );
 }

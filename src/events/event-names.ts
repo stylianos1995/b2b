@@ -1,5 +1,6 @@
 export const EVENT_NAMES = {
   USER_REGISTERED: "user.registered",
+  PASSWORD_RESET_REQUESTED: "user.password_reset_requested",
   BUSINESS_CREATED: "business.created",
   PROVIDER_VERIFIED: "provider.verified",
   PRODUCT_CREATED: "product.created",

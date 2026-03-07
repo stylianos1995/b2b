@@ -51,7 +51,7 @@ export class BusinessService {
       business_type: dto.business_type,
       tax_id: dto.tax_id ?? null,
       status: "pending_verification",
-      default_currency: "GBP",
+      default_currency: "EUR",
     });
     await this.businessRepo.save(business);
 

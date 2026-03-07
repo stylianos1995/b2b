@@ -29,6 +29,11 @@ export class UpdateProductDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(3)
+  currency?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(50)
   unit_size?: string;
 

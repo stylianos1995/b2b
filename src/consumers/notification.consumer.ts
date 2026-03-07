@@ -69,4 +69,20 @@ export class NotificationConsumer {
   }): Promise<void> {
     await this.notificationService.sendProviderVerified(payload);
   }
+
+  @OnEvent(EVENT_NAMES.PASSWORD_RESET_REQUESTED)
+  async handlePasswordResetRequested(payload: {
+    email: string;
+    token: string;
+  }): Promise<void> {
+    const baseUrl =
+      process.env.FRONTEND_URL ||
+      process.env.APP_URL ||
+      "http://localhost:5173";
+    const resetLink = `${baseUrl.replace(/\/$/, "")}/reset-password?token=${encodeURIComponent(payload.token)}`;
+    await this.notificationService.sendPasswordResetEmail(
+      payload.email,
+      resetLink,
+    );
+  }
 }

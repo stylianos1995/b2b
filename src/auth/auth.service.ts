@@ -10,6 +10,7 @@ import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
 import { v4 as uuidv4 } from "uuid";
 import { User } from "../entities/user.entity";
 import { Session } from "../entities/session.entity";
@@ -20,6 +21,8 @@ import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
 import { ChangeEmailDto } from "./dto/change-email.dto";
 import { DeleteAccountDto } from "./dto/delete-account.dto";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { RequestContext } from "../common/interfaces/request-context.interface";
 import { AuthEventsProducer } from "../producers/auth-events.producer";
 
@@ -55,6 +58,7 @@ export class AuthService {
       first_name: dto.first_name,
       last_name: dto.last_name,
       phone: dto.phone ?? null,
+      country: dto.country ?? null,
       status: "active",
     });
     await this.userRepo.save(user);
@@ -328,6 +332,68 @@ export class AuthService {
       { email: newEmail, email_verified_at: null },
     );
     return { email: newEmail };
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
+    const email = dto.email?.trim().toLowerCase() || "";
+    const user = await this.userRepo.findOne({
+      where: { email },
+      select: ["id", "email", "status"],
+    });
+    if (!user || user.status !== "active") {
+      return;
+    }
+    const token = randomBytes(32).toString("hex");
+    const tokenHash = await bcrypt.hash(token, 10);
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+    await this.userRepo.update(
+      { id: user.id },
+      {
+        password_reset_token_hash: tokenHash,
+        password_reset_expires_at: expiresAt,
+      },
+    );
+    this.authEventsProducer.passwordResetRequested({
+      user_id: user.id,
+      email: user.email,
+      token,
+      expires_at: expiresAt.toISOString(),
+    });
+  }
+
+  async resetPassword(dto: ResetPasswordDto): Promise<void> {
+    const token = (dto.token ?? "").trim();
+    if (!token) {
+      throw new BadRequestException("Invalid or expired reset link");
+    }
+    const users = await this.userRepo.find({
+      where: {},
+      select: ["id", "password_reset_token_hash", "password_reset_expires_at"],
+    });
+    let matched: User | null = null;
+    const now = new Date();
+    for (const u of users) {
+      if (!u.password_reset_token_hash || !u.password_reset_expires_at) continue;
+      if (u.password_reset_expires_at < now) continue;
+      const ok = await bcrypt.compare(token, u.password_reset_token_hash);
+      if (ok) {
+        matched = u;
+        break;
+      }
+    }
+    if (!matched) {
+      throw new BadRequestException("Invalid or expired reset link");
+    }
+    const password_hash = await bcrypt.hash(dto.new_password, SALT_ROUNDS);
+    await this.userRepo.update(
+      { id: matched.id },
+      {
+        password_hash,
+        password_reset_token_hash: null,
+        password_reset_expires_at: null,
+      },
+    );
   }
 
   async deleteAccount(userId: string, dto: DeleteAccountDto): Promise<void> {

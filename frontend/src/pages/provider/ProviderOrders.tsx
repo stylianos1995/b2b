@@ -54,9 +54,10 @@ export function ProviderOrders() {
             ...o,
             id: (o.order_id ?? o.id) as string,
             order_number: o.order_number,
+            business_name: o.business_name as string | undefined,
             status: o.status,
             total: Number(o.total),
-            currency: (o.currency as string) ?? "GBP",
+            currency: (o.currency as string) ?? "EUR",
             requested_delivery_date: o.requested_delivery_date as string,
           })) as Order[]
         );
@@ -122,6 +123,9 @@ export function ProviderOrders() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
                 <strong style={{ color: "#1e293b" }}>{o.order_number}</strong>
+                {o.business_name && (
+                  <span style={{ color: "#475569", fontSize: "0.9375rem" }}>{o.business_name}</span>
+                )}
                 <span className={`dashboard-status dashboard-status--${o.status === "delivered" ? "delivered" : o.status === "confirmed" ? "confirmed" : "pending"}`}>
                   {o.status}
                 </span>

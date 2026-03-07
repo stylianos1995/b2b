@@ -5,6 +5,7 @@ import {
   getProvider,
   updateProvider,
   type CreateProviderBody,
+  type UpdateProviderBody,
 } from "../../api/provider";
 import type { ProviderPublic } from "../../types";
 
@@ -38,7 +39,7 @@ export function ProviderProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [form, setForm] = useState<CreateProviderBody>(emptyProviderForm);
+  const [form, setForm] = useState<CreateProviderBody & { min_order_value?: string }>(emptyProviderForm);
 
   useEffect(() => {
     if (providerId) {
@@ -50,6 +51,8 @@ export function ProviderProfile() {
             legal_name: r.legal_name,
             trading_name: r.trading_name,
             provider_type: r.provider_type,
+            min_order_value:
+              r.min_order_value != null ? String(r.min_order_value) : "",
           }));
         })
         .catch(() => setError("Failed to load"))
@@ -76,7 +79,18 @@ export function ProviderProfile() {
     if (!providerId) return;
     setError(null);
     try {
-      await updateProvider(providerId, form);
+      const body: UpdateProviderBody = {
+        legal_name: form.legal_name,
+        trading_name: form.trading_name,
+        provider_type: form.provider_type,
+      };
+      if (form.min_order_value !== undefined && form.min_order_value !== "") {
+        const val = Number(form.min_order_value);
+        if (!Number.isNaN(val) && val >= 0) body.min_order_value = val;
+      } else {
+        body.min_order_value = null;
+      }
+      await updateProvider(providerId, body);
       setSuccess("Profile updated.");
       const r = await getProvider(providerId);
       setProvider(r);
@@ -229,6 +243,22 @@ export function ProviderProfile() {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="form-group">
+              <label>Minimum order value</label>
+              <input
+                type="number"
+                min={0}
+                step={0.01}
+                value={form.min_order_value ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, min_order_value: e.target.value }))
+                }
+                placeholder="No minimum"
+              />
+              <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                Orders below this total (in your default currency) will be rejected. Leave empty for no minimum.
+              </p>
             </div>
             <button type="submit" className="btn btn-primary">
               Update

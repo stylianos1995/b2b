@@ -37,7 +37,7 @@ export function ProviderOrderDetail() {
     setAction("confirm");
     try {
       const o = await confirmOrder(orderId);
-      setOrder(o);
+      setOrder((prev) => (prev ? { ...prev, ...o } : (o as Order)));
       if (o.delivery_id) setDelivery(await getDelivery(o.delivery_id));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
@@ -67,7 +67,7 @@ export function ProviderOrderDetail() {
     setAction(status);
     try {
       const o = await updateOrderStatus(orderId, status);
-      setOrder(o);
+      setOrder((prev) => (prev ? { ...prev, ...o } : (o as Order)));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
     } finally {
@@ -90,7 +90,7 @@ export function ProviderOrderDetail() {
           const o = await updateOrderStatus(orderId!, "shipped");
           setOrder(o);
         } else if (status === "delivered") {
-          setOrder({ ...order, status: "delivered" });
+          setOrder((prev) => (prev ? { ...prev, status: "delivered" } : prev));
         }
       }
     } catch (e) {
@@ -123,6 +123,32 @@ export function ProviderOrderDetail() {
       <h1 className="dashboard-title">Order {order.order_number}</h1>
       <p className="dashboard-subtitle">View details and manage delivery.</p>
       {error && <p className="error">{error}</p>}
+      {(order.business || order.delivery_location) && (
+        <div className="dashboard-card">
+          <h2 style={{ marginTop: 0 }}>Buyer</h2>
+          {order.business && (
+            <p style={{ marginBottom: order.delivery_location ? "0.75rem" : 0 }}>
+              <strong>Establishment:</strong> {order.business.trading_name}
+              {order.business.legal_name && order.business.legal_name !== order.business.trading_name && (
+                <span style={{ color: "#64748b", fontSize: "0.9375rem" }}> ({order.business.legal_name})</span>
+              )}
+            </p>
+          )}
+          {order.delivery_location && (
+            <p style={{ margin: 0 }}>
+              <strong>Delivery address:</strong>
+              <br />
+              {order.delivery_location.address_line_1}
+              {order.delivery_location.address_line_2 && `, ${order.delivery_location.address_line_2}`}
+              <br />
+              {order.delivery_location.postal_code} {order.delivery_location.city}
+              {order.delivery_location.region && `, ${order.delivery_location.region}`}
+              <br />
+              {order.delivery_location.country}
+            </p>
+          )}
+        </div>
+      )}
       <div className="dashboard-card">
         <p>
           <strong>Status:</strong> {order.status} · <strong>Total:</strong>{" "}

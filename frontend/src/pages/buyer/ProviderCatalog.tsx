@@ -184,10 +184,21 @@ export function ProviderCatalog() {
 
   if (loading || !providerId) return <div className="dashboard-loading">Loading...</div>;
 
+  const minOrder =
+    provider?.min_order_value != null && Number(provider.min_order_value) > 0
+      ? Number(provider.min_order_value).toFixed(2)
+      : null;
+  const currency = provider?.default_currency ?? "EUR";
+
   return (
     <div className="dashboard-page">
       <h1 className="dashboard-title">{provider?.trading_name ?? "Catalog"}</h1>
       <p className="dashboard-subtitle">Browse products and add to order.</p>
+      {minOrder != null && (
+        <p style={{ fontSize: "0.9375rem", color: "var(--text-muted)", marginTop: "-0.5rem", marginBottom: "0.5rem" }}>
+          Minimum order: {minOrder} {currency}
+        </p>
+      )}
       {error && <p className="error">{error}</p>}
       <div
         style={{
@@ -316,7 +327,7 @@ export function ProviderCatalog() {
                       justifyContent: "space-between",
                     }}
                   >
-                    {l.name} × {l.quantity} {l.unit} = {l.currency ?? "GBP"}{" "}
+                    {l.name} × {l.quantity} {l.unit} = {l.currency ?? "EUR"}{" "}
                     {(l.quantity * (l.unit_price ?? 0)).toFixed(2)}
                     <button
                       type="button"

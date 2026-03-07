@@ -36,7 +36,11 @@ export async function getProvider(id: string): Promise<ProviderPublic> {
   return { ...res, id: (res.provider_id ?? res.id) as string } as ProviderPublic;
 }
 
-export async function updateProvider(id: string, body: Partial<CreateProviderBody>): Promise<ProviderPublic> {
+export interface UpdateProviderBody extends Partial<CreateProviderBody> {
+  min_order_value?: number | null;
+}
+
+export async function updateProvider(id: string, body: UpdateProviderBody): Promise<ProviderPublic> {
   return apiPatch<ProviderPublic>(`/providers/${id}`, body);
 }
 
@@ -50,7 +54,10 @@ export async function addProduct(providerId: string, body: CreateProductBody): P
   return apiPost<Product>(`/providers/${providerId}/products`, body);
 }
 
-export async function updateProduct(providerId: string, productId: string, body: Partial<CreateProductBody>): Promise<Product> {
+/** Fields that can be updated (create body + is_active). */
+export type UpdateProductBody = Partial<CreateProductBody> & { is_active?: boolean };
+
+export async function updateProduct(providerId: string, productId: string, body: UpdateProductBody): Promise<Product> {
   return apiPatch<Product>(`/providers/${providerId}/products/${productId}`, body);
 }
 

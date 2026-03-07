@@ -31,11 +31,13 @@ export interface Location {
 
 export interface ProviderPublic {
   id: string;
-  legal_name: string;
+  legal_name?: string;
   trading_name: string;
   provider_type: string;
-  status: string;
-  default_currency: string;
+  status?: string;
+  default_currency?: string;
+  /** Minimum order total (in default_currency). Orders below this are rejected. */
+  min_order_value?: number | string | null;
 }
 
 export interface Product {
@@ -64,12 +66,29 @@ export interface OrderLine {
   line_total: number;
 }
 
+export interface OrderDeliveryLocation {
+  address_line_1: string;
+  address_line_2?: string;
+  city: string;
+  region?: string;
+  postal_code: string;
+  country: string;
+}
+
+export interface OrderBusiness {
+  trading_name: string;
+  legal_name: string;
+}
+
 export interface Order {
   id: string;
   order_number: string;
   provider_id: string;
   business_id: string;
+  business_name?: string;
+  business?: OrderBusiness;
   delivery_location_id: string;
+  delivery_location?: OrderDeliveryLocation;
   status: string;
   subtotal: number;
   tax_total: number;

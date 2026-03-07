@@ -41,7 +41,7 @@ export class Business {
   @Column({ type: "varchar", length: 500, nullable: true })
   logo_url: string | null;
 
-  @Column({ type: "varchar", length: 3, default: "GBP" })
+  @Column({ type: "varchar", length: 3, default: "EUR" })
   default_currency: string;
 
   @Column({ type: "uuid", nullable: true })

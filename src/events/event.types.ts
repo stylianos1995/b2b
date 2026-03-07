@@ -14,6 +14,13 @@ export interface UserRegisteredPayload extends BaseEventPayload {
   registered_at: string;
 }
 
+export interface PasswordResetRequestedPayload extends BaseEventPayload {
+  user_id: string;
+  email: string;
+  token: string;
+  expires_at: string;
+}
+
 export interface BusinessCreatedPayload extends BaseEventPayload {
   business_id: string;
   owner_user_id: string;

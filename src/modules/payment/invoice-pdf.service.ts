@@ -53,7 +53,7 @@ export class InvoicePdfService {
     const subtotal = Number(invoice.subtotal) || 0;
     const taxTotal = Number(invoice.tax_total) || 0;
     const total = Number(invoice.total) || 0;
-    const currency = (invoice.currency ?? "GBP").toUpperCase();
+    const currency = (invoice.currency ?? "EUR").toUpperCase();
     const issuedAt = invoice.issued_at
       ? new Date(invoice.issued_at).toLocaleDateString("en-GB", {
           day: "2-digit",

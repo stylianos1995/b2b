@@ -39,7 +39,13 @@ export class DiscoveryService {
       .where("p.status = :status", { status: "active" })
       .orderBy("p.trading_name", "ASC")
       .take(limit + 1)
-      .select(["p.id", "p.trading_name", "p.provider_type"]);
+      .select([
+        "p.id",
+        "p.trading_name",
+        "p.provider_type",
+        "p.min_order_value",
+        "p.default_currency",
+      ]);
     if (filters.provider_type) {
       qb.andWhere("p.provider_type = :providerType", {
         providerType: filters.provider_type,
@@ -71,6 +77,8 @@ export class DiscoveryService {
         provider_id: p.id,
         trading_name: p.trading_name,
         provider_type: p.provider_type,
+        min_order_value: p.min_order_value ?? undefined,
+        default_currency: p.default_currency ?? "EUR",
       })),
       next_cursor,
     };
@@ -86,6 +94,7 @@ export class DiscoveryService {
         "provider_type",
         "description",
         "min_order_value",
+        "default_currency",
         "lead_time_hours",
       ],
     });
@@ -96,6 +105,7 @@ export class DiscoveryService {
       provider_type: provider.provider_type,
       description: provider.description ?? undefined,
       min_order_value: provider.min_order_value ?? undefined,
+      default_currency: provider.default_currency ?? "EUR",
       lead_time_hours: provider.lead_time_hours ?? undefined,
     };
   }

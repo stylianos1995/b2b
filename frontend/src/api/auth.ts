@@ -13,6 +13,7 @@ export interface RegisterBody {
   first_name: string;
   last_name: string;
   phone?: string;
+  country?: string;
 }
 
 export interface UpdateProfileBody {
@@ -61,4 +62,12 @@ export async function changeEmail(body: ChangeEmailBody): Promise<{ email: strin
 
 export async function deleteAccount(body: DeleteAccountBody): Promise<void> {
   return apiPost('/auth/delete-account', body);
+}
+
+export async function forgotPassword(email: string): Promise<{ message: string }> {
+  return apiPost<{ message: string }>('/auth/forgot-password', { email: email.trim().toLowerCase() });
+}
+
+export async function resetPassword(token: string, new_password: string): Promise<{ message: string }> {
+  return apiPost<{ message: string }>('/auth/reset-password', { token, new_password });
 }

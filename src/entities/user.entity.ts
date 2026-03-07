@@ -22,6 +22,9 @@ export class User {
   @Column({ type: "varchar", length: 50, nullable: true })
   phone: string | null;
 
+  @Column({ type: "varchar", length: 2, nullable: true })
+  country: string | null;
+
   @Column({ type: "varchar", length: 255 })
   password_hash: string;
 
@@ -48,6 +51,12 @@ export class User {
 
   @Column({ type: "varchar", length: 50, default: "UTC" })
   timezone: string;
+
+  @Column({ type: "varchar", length: 255, nullable: true })
+  password_reset_token_hash: string | null;
+
+  @Column({ type: "timestamptz", nullable: true })
+  password_reset_expires_at: Date | null;
 
   @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;

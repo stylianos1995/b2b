@@ -201,7 +201,17 @@ export class OrderService {
       0,
     );
     const total = lines.reduce((sum, l) => sum + l.line_total, 0);
-    const currency = products[0]?.currency ?? "GBP";
+    const currency = products[0]?.currency ?? provider.default_currency ?? "EUR";
+
+    const minOrderValue =
+      provider.min_order_value != null
+        ? Number(provider.min_order_value)
+        : null;
+    if (minOrderValue != null && total < minOrderValue) {
+      throw new BadRequestException(
+        `Order total (${total.toFixed(2)} ${currency}) is below this supplier's minimum order value of ${minOrderValue} ${currency}.`,
+      );
+    }
 
     const order = this.orderRepo.create({
       order_number: this.orderNumber(),
@@ -363,6 +373,7 @@ export class OrderService {
     const limit = Math.min(pagination.limit ?? 20, 100);
     const qb = this.orderRepo
       .createQueryBuilder("o")
+      .leftJoinAndSelect("o.business", "b")
       .where("o.provider_id = :providerId", { providerId })
       .orderBy("o.created_at", "DESC")
       .take(limit + 1)
@@ -375,6 +386,8 @@ export class OrderService {
         "o.currency",
         "o.requested_delivery_date",
         "o.created_at",
+        "b.id",
+        "b.trading_name",
       ]);
     if (filters?.status)
       qb.andWhere("o.status = :status", { status: filters.status });
@@ -392,16 +405,20 @@ export class OrderService {
     const hasMore = items.length > limit;
     if (hasMore) items.pop();
     return {
-      items: items.map((o) => ({
-        order_id: o.id,
-        order_number: o.order_number,
-        business_id: o.business_id,
-        status: o.status,
-        total: o.total,
-        currency: o.currency,
-        requested_delivery_date: o.requested_delivery_date,
-        created_at: o.created_at,
-      })),
+      items: items.map((o) => {
+        const business = o.business as { trading_name?: string } | undefined;
+        return {
+          order_id: o.id,
+          order_number: o.order_number,
+          business_id: o.business_id,
+          business_name: business?.trading_name ?? undefined,
+          status: o.status,
+          total: o.total,
+          currency: o.currency,
+          requested_delivery_date: o.requested_delivery_date,
+          created_at: o.created_at,
+        };
+      }),
       next_cursor: hasMore ? items[items.length - 1]?.id : undefined,
     };
   }
@@ -414,20 +431,31 @@ export class OrderService {
     this.assertProviderAccess(user, providerId);
     const order = await this.orderRepo.findOne({
       where: { id: orderId, provider_id: providerId },
-      relations: ["orderLines", "deliveryLocation", "delivery"],
+      relations: ["orderLines", "deliveryLocation", "delivery", "business"],
     });
     if (!order) throw new NotFoundException("Order not found");
     const deliveryLocation = order.deliveryLocation as Location | undefined;
     const delivery = order.delivery as Delivery | undefined;
+    const business = order.business as
+      | { id: string; legal_name: string; trading_name: string }
+      | undefined;
     return {
       order_id: order.id,
       order_number: order.order_number,
       business_id: order.business_id,
+      business: business
+        ? {
+            trading_name: business.trading_name,
+            legal_name: business.legal_name,
+          }
+        : undefined,
       delivery_id: delivery?.id,
       delivery_location: deliveryLocation
         ? {
             address_line_1: deliveryLocation.address_line_1,
+            address_line_2: deliveryLocation.address_line_2 ?? undefined,
             city: deliveryLocation.city,
+            region: deliveryLocation.region ?? undefined,
             postal_code: deliveryLocation.postal_code,
             country: deliveryLocation.country,
           }

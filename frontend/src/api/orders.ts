@@ -51,17 +51,30 @@ export async function getProviderOrder(id: string): Promise<Order> {
   const res = await apiGet<Record<string, unknown>>(`/provider/orders/${id}`);
   const r = res as Record<string, unknown>;
   const lines = (Array.isArray(r.lines) ? r.lines : []) as Array<Record<string, unknown>>;
+  const business = r.business as { trading_name?: string; legal_name?: string } | undefined;
+  const loc = r.delivery_location as Record<string, unknown> | undefined;
   return {
     id: (r.order_id ?? r.id) as string,
     order_number: r.order_number as string,
     provider_id: r.provider_id as string,
     business_id: r.business_id as string,
+    business: business?.trading_name != null ? { trading_name: business.trading_name, legal_name: business.legal_name ?? "" } : undefined,
+    delivery_location: loc
+      ? {
+          address_line_1: (loc.address_line_1 as string) ?? "",
+          address_line_2: loc.address_line_2 as string | undefined,
+          city: (loc.city as string) ?? "",
+          region: loc.region as string | undefined,
+          postal_code: (loc.postal_code as string) ?? "",
+          country: (loc.country as string) ?? "",
+        }
+      : undefined,
     delivery_location_id: "",
     status: r.status as string,
     subtotal: Number(r.subtotal),
     tax_total: Number(r.tax_total),
     total: Number(r.total),
-    currency: (r.currency as string) ?? "GBP",
+    currency: (r.currency as string) ?? "EUR",
     requested_delivery_date:
       typeof r.requested_delivery_date === "string"
         ? r.requested_delivery_date

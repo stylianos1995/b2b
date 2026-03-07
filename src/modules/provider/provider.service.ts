@@ -57,7 +57,7 @@ export class ProviderService {
       provider_type: dto.provider_type,
       tax_id: dto.tax_id ?? null,
       status: "pending_verification",
-      default_currency: "GBP",
+      default_currency: "EUR",
     });
     await this.providerRepo.save(provider);
 
@@ -101,6 +101,7 @@ export class ProviderService {
         "provider_type",
         "status",
         "default_currency",
+        "min_order_value",
         "created_at",
       ],
     });
@@ -112,6 +113,7 @@ export class ProviderService {
       provider_type: provider.provider_type,
       status: provider.status,
       default_currency: provider.default_currency,
+      min_order_value: provider.min_order_value ?? undefined,
       created_at: provider.created_at,
     };
   }
@@ -128,6 +130,9 @@ export class ProviderService {
       provider.description = dto.description ?? null;
     if (dto.default_currency != null)
       provider.default_currency = dto.default_currency;
+    if (dto.min_order_value !== undefined)
+      provider.min_order_value =
+        dto.min_order_value == null ? null : String(dto.min_order_value);
     await this.providerRepo.save(provider);
     return { provider_id: provider.id, updated_at: provider.updated_at };
   }
@@ -232,6 +237,7 @@ export class ProviderService {
     if (dto.name != null) product.name = dto.name;
     if (dto.category != null) product.category = dto.category;
     if (dto.unit != null) product.unit = dto.unit;
+    if (dto.currency != null) product.currency = dto.currency;
     if (dto.unit_size !== undefined) product.unit_size = dto.unit_size ?? null;
     if (dto.allowed_sizes !== undefined)
       product.allowed_sizes = dto.allowed_sizes?.length
